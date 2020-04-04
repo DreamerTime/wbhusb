@@ -1,0 +1,283 @@
+<!--
+    Copyright (c) 2019 Stefan Kremser
+    This software is licensed under the MIT License. See the license file for details.
+    Source: github.com/spacehuhn/WiFiDuck
+-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=0.8, minimal-ui" />
+        <meta name="theme-color" content="#36393E" />
+        <meta name="description" content="WiFi Duck" />
+        <meta name="author" content="Spacehuhn - Stefan Kremser"/>
+        <link rel="stylesheet" type="text/css" href="style.css">
+        <script src="script.js"></script>
+        <script src="index.js"></script>
+        <title>WiFi Duck</title>
+    </head>
+    <body>
+        <nav>
+            <ul class="menu">
+                <li><a href="index.html">主页</a></li>
+                <li><a href="settings.html">设置</a></li>
+                <li><a href="terminal.html">终端</a></li>
+                <li><a href="credits.html">关于</a></li>
+            </ul>
+        </nav>
+        <div id="status"></div>
+        <main>
+            <section>
+                <h1>Status</h1>
+                <div class="row">
+                    <p><b>剩余空间: </b><span id="freeMemory">-</span></p>
+                    <button class="danger" id="format">清除</button>
+                    <button class="warn" id="stop">停止</button>
+                    <button class="white" id="reconnect">重新链接</button>
+                </div>
+            </section>
+            <section>
+                <h1>脚本 <a class="reload" id="scriptsReload">&#x21bb;</a></h1>
+                <table class="table" id="scriptTable"></table>
+                <div class="row">
+                    <input placeholder="Filename /<name>" type="text" class="smooth" value="/" id="newFile"/>
+                    <button class="success" onclick="create(get_new_filename())">创建</button>
+                </div>
+            </section>
+            <section>
+                <h1>编辑器 <a class="reload" id="editorReload">&#x21bb;</a></h1>
+                <div class="row">
+                    <input placeholder="Filename /<name>" type="text" class="smooth" value="/" id="editorFile">
+                    <button class="danger" id="editorDelete">删除</button>
+                    <button class="primary" id="editorDownload">卸载</button>
+                    <button class="primary" id="editorAutorun">开启自动运行</button>
+                </div>
+                <div class="row">
+                    <textarea class="smooth" id="editor"></textarea>
+                </div>
+                <div class="row">
+                    <div class="debugger">
+                        输出: <span id="editorinfo">保存</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div id="editor-primary-buttons">
+                        <button class="success" id="editorSave">保存</button>
+                        <button class="warn" id="editorRun">运行</button>
+                        <button class="danger" id="editorStop">停止</button>
+                    </div>
+                </div>
+            </section>
+            <section>
+                <h1>文档</h1>
+                <h2>Ducky Script</h2>
+                <h3>基本</h3>
+                <p>
+                    键由一个空格分隔。
+                    <br> 在一行中写的所有东西都会同时被执行。
+                    <br> 要编写文本，请使用STRING函数。
+                </p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>例子</th>
+                            <th>Explanation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>WINDOWS
+                                <br> r
+                            </td>
+                            <td>按下Windows键后按r键</td>
+                        </tr>
+                        <tr>
+                            <td>WINDOWS r</td>
+                            <td>同时按下Windows键和r键</td>
+                        </tr>
+                        <tr>
+                            <td>STRING WINDOWS r</td>
+                            <td>Write WINDOWS r</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <h3>函数</h3>
+                <table id="ducky-functions-table">
+                    <thead>
+                        <tr>
+                            <th>命令</th>
+                            <th>例如</th>
+                            <th>说明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>REM</code></td>
+                            <td><code>REM Hello World!</code></td>
+                            <td>注释</td>
+                        </tr>
+                        <tr>
+                            <td><code>DEFAULTDELAY</code> 或者 <code>DEFAULT_DELAY</code></td>
+                            <td><code>DEFAULTDELAY 200</code></td>
+                            <td>每个命令之间的时间（毫秒）</td>
+                        </tr>
+                        <tr>
+                            <td><code>DELAY</code></td>
+                            <td><code>DELAY 1000</code></td>
+                            <td>命令间隔时间(ms)</td>
+                        </tr>
+                        <tr>
+                            <td><code>STRING</code></td>
+                            <td><code>STRING Hello World!</code></td>
+                            <td>键入以下字符串</td>
+                        </tr>
+                        <tr>
+                            <td><code>REPEAT</code> 或 <code>REPLAY</code></td>
+                            <td><code>REPEAT 3</code></td>
+                            <td>重复上一个指令n次</td>
+                        </tr>
+                        <tr>
+                            <td><code>LOCALE</code></td>
+                            <td><code>LOCALE DE</code></td>
+                            <td>设置键盘布局. 现在支持: <code>DE</code>, <code>GB</code>, <code>US</code>, <code>ES</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><code>KEYCODE</code></td>
+                            <td><code>KEYCODE 0x02 0x04</code></td>
+                            <td>设置一个具体的按键代码 (modifier, key1[, ..., key6]) 十进制或十六进制</td>
+                        </tr>
+                        <tr>
+                            <td><code>LED</code></td>
+                            <td><code>LED 40 20 10</code></td>
+                            <td>使用十六进制来改变LED颜色 (0-255)</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <h3>基础键</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>键</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>a</code> - <code>z</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>A</code> - <code>Z</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>0</code> - <code>9</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>F1</code> - <code>F12</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <h3>控制键</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>键</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>CTRL</code> 或 <code>CONTROL</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>SHIFT</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>ALT</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>WINDOWS</code> 或 <code>GUI</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <h3>其他键</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>键</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>ENTER</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>MENU</code> or <code>APP</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>DELETE</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>HOME</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>INSERT</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>PAGEUP</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>PAGEDOWN</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>UP</code> 或 <code>UPARROW</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>DOWN</code> 或 <code>DOWNARROW</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>LEFT</code> 或 <code>LEFTARROW</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>RIGHT</code> 或 <code>RIGHTARROW</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>TAB</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>END</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>ESC</code> 或 <code>ESCAPE</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>SPACE</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>PAUSE 或 BREAK</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>CAPSLOCK</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>NUMLOCK</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>PRINTSCREEN</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>SCROLLLOCK</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+        <footer>
+            <a href="https://github.com/spacehuhn/WiFiDuck" target="_blank">Source</a>
+            <br><br>
+            <span id="version"></span><br> 
+            Copyright (c) 2019 Stefan Kremser<br>
+            <a href="https://spacehuhn.io" target="_blank">spacehuhn.io</a>
+            <a href="https://www.ducktoolkit.com/" target="_blank">生成器</a>
+        </footer>
+    </body>
+</html>
+

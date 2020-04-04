@@ -1,0 +1,55 @@
+<!--
+	Copyright (c) 2019 Stefan Kremser
+	This software is licensed under the MIT License. See the license file for details.
+	Source: github.com/spacehuhn/WiFiDuck
+-->
+<!DOCTYPE html>
+<html>
+  	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=0.8, minimal-ui">
+		<meta name="theme-color" content="#36393E">
+		<meta name="description" content="WiFi Duck">
+		<meta name="author" content="Spacehuhn - Stefan Kremser">
+		<link rel="stylesheet" type="text/css" href="style.css">
+
+		<script src="script.js"></script>
+		<script src="terminal.js"></script>
+    	<title>WiFi Duck | 命令行</title>
+  	</head>
+  	<body>
+		<nav>
+			<ul class="menu">
+                <li><a href="index.html">主页</a></li>
+                <li><a href="settings.html">设置</a></li>
+                <li><a href="terminal.html">终端</a></li>
+                <li><a href="credits.html">关于</a></li>
+			</ul>
+		</nav>
+		<div id="status"></div>
+		<main>
+			<section>
+				<h2>命令行</h2>
+				<div class="row">
+					<input type="text" class="smooth" id="input" value="help">
+					<button class="primary" id="send">发送</button>
+					<button class="warn" id="clear">清理</button>
+					<button class="white" id="reconnect">重新连接</button>
+				</div>
+				<div class="row">
+					<div id="output" class="terminal"></div>
+				</div>
+			</section>
+		</main>
+		<footer>
+			<a href="https://github.com/spacehuhn/WiFiDuck" target="_blank">Source</a>
+			<br><br>
+			<span id="version"></span><br>
+			Copyright (c) 2019 Stefan Kremser<br>
+			<a href="https://spacehuhn.io" target="_blank">spacehuhn.io</a>
+			<a href="https://www.ducktoolkit.com/" target="_blank">生成器</a>
+		</footer>
+  	</body>
+</html>
+  
+  
